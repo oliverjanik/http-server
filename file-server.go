@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -24,17 +25,19 @@ func wrapHandler(handler http.Handler) http.Handler {
 	})
 }
 
+var port = flag.Int("p", 8001, "Port to run on")
+
 func main() {
+	flag.Parse()
+
 	wd, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	port := 8001
+	log.Printf("Starting server on port %d", *port)
 
-	log.Printf("Starting server on port %d", port)
-
-	addr := fmt.Sprintf(":%d", port)
+	addr := fmt.Sprintf(":%d", *port)
 
 	log.Fatal(http.ListenAndServe(addr, wrapHandler(http.FileServer(http.Dir(wd)))))
 }
